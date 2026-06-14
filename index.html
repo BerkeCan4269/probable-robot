@@ -1,0 +1,375 @@
+<!--
+  ============================================================
+  FOR RAINY DAYS
+  ------------------------------------------------------------
+  Everything you need to change is in the CONFIG block below.
+  1. Set the "code" (her key).
+  2. Replace the cards. Each card is text between backticks,
+     separated by commas. Write as many as you want.
+  3. Save, then host it (instructions are in the chat).
+  ============================================================
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>for rainy days</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Newsreader:ital,opsz@0,6..72;1,6..72&family=Caveat:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* ===================== CONFIG IS IN <script> AT THE BOTTOM ===================== */
+
+  :root{
+    --dusk-1:#222b33;
+    --dusk-2:#2d3a44;
+    --glass:#4a5a66;
+    --rain:#8ea3b0;
+    --paper:#f7f1e4;
+    --paper-edge:#ece2cd;
+    --ink:#2c2722;
+    --ink-soft:#5b524a;
+    --rose:#b07a70;
+    --amber:#c79a5e;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+
+  html,body{height:100%}
+
+  body{
+    font-family:"Newsreader",Georgia,serif;
+    background:
+      radial-gradient(120% 90% at 50% -10%, var(--dusk-2), var(--dusk-1) 70%);
+    color:var(--paper);
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+    position:relative;
+    padding:24px;
+  }
+
+  /* ---- the window / rain on glass ---- */
+  .window{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background:
+      linear-gradient(180deg, rgba(74,90,102,.35), rgba(34,43,51,.55));
+    pointer-events:none;
+  }
+  .rain{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+  .drop{
+    position:absolute;
+    top:-12%;
+    width:1px;
+    height:80px;
+    background:linear-gradient(transparent, var(--rain));
+    opacity:.18;
+    animation:fall linear infinite;
+  }
+  @keyframes fall{
+    to{transform:translateY(125vh)}
+  }
+  /* soft fog on the glass */
+  .fog{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(60% 45% at 50% 55%, transparent, rgba(20,26,31,.45));
+  }
+
+  /* ---- shared stage ---- */
+  .stage{position:relative;z-index:3;width:100%;max-width:560px;text-align:center}
+
+  .eyebrow{
+    font-family:"Fraunces",serif;
+    font-weight:400;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    font-size:.7rem;
+    color:var(--rain);
+    margin-bottom:1.4rem;
+  }
+
+  /* ---- lock screen ---- */
+  #lock h1{
+    font-family:"Fraunces",serif;
+    font-weight:400;
+    font-size:clamp(2rem,7vw,3rem);
+    line-height:1.1;
+    margin-bottom:.5rem;
+    font-style:italic;
+  }
+  #lock .sub{
+    color:#c9d2d8;
+    font-size:1.05rem;
+    max-width:34ch;
+    margin:0 auto 2.2rem;
+    line-height:1.5;
+  }
+  .keyrow{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+  input[type=text]{
+    font-family:"Newsreader",serif;
+    font-size:1.1rem;
+    padding:.85rem 1.1rem;
+    width:min(260px,70vw);
+    border:1px solid rgba(255,255,255,.18);
+    border-radius:2px;
+    background:rgba(255,255,255,.05);
+    color:var(--paper);
+    text-align:center;
+    letter-spacing:.04em;
+    outline:none;
+    transition:border-color .2s;
+  }
+  input[type=text]:focus{border-color:var(--amber)}
+  input::placeholder{color:#7f8c95}
+
+  button{
+    font-family:"Fraunces",serif;
+    font-size:.95rem;
+    letter-spacing:.04em;
+    padding:.85rem 1.6rem;
+    border:1px solid var(--amber);
+    border-radius:2px;
+    background:transparent;
+    color:var(--amber);
+    cursor:pointer;
+    transition:background .2s,color .2s;
+  }
+  button:hover{background:var(--amber);color:var(--dusk-1)}
+  button:focus-visible{outline:2px solid var(--paper);outline-offset:3px}
+
+  .err{
+    min-height:1.4em;
+    margin-top:1rem;
+    color:var(--rose);
+    font-style:italic;
+    font-size:.95rem;
+    opacity:0;
+    transition:opacity .2s;
+  }
+  .err.show{opacity:1}
+
+  /* ---- card screen ---- */
+  #room{display:none}
+  #room.on{display:block}
+
+  .sill{position:relative;min-height:340px;display:flex;align-items:center;justify-content:center}
+
+  /* faint stacked cards behind */
+  .stack::before,.stack::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:var(--paper-edge);
+    border-radius:3px;
+    z-index:-1;
+  }
+  .stack::before{transform:rotate(-2.5deg) translateY(6px);opacity:.5}
+  .stack::after{transform:rotate(2deg) translateY(3px);opacity:.7}
+
+  .card{
+    position:relative;
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:3px;
+    padding:2.6rem 2.2rem;
+    width:100%;
+    max-width:480px;
+    box-shadow:0 24px 60px -24px rgba(0,0,0,.6);
+    text-align:left;
+  }
+  .card .mark{
+    font-family:"Caveat",cursive;
+    font-size:1.5rem;
+    color:var(--rose);
+    margin-bottom:1rem;
+  }
+  .card p{
+    font-size:clamp(1.1rem,4.4vw,1.3rem);
+    line-height:1.6;
+    color:var(--ink);
+    white-space:pre-wrap;
+  }
+  .card .sign{
+    margin-top:1.6rem;
+    font-family:"Caveat",cursive;
+    font-size:1.4rem;
+    color:var(--ink-soft);
+  }
+
+  .empty{
+    color:var(--rain);
+    font-style:italic;
+    font-size:1.1rem;
+    max-width:30ch;
+    line-height:1.6;
+  }
+
+  .controls{margin-top:2rem;display:flex;gap:.8rem;justify-content:center;align-items:center;flex-wrap:wrap}
+  .count{font-size:.85rem;color:var(--rain);letter-spacing:.04em}
+
+  /* reveal motion */
+  .reveal{animation:rise .55s cubic-bezier(.2,.8,.2,1)}
+  @keyframes rise{
+    from{opacity:0;transform:translateY(14px) rotate(-1deg)}
+    to{opacity:1;transform:translateY(0) rotate(0)}
+  }
+  .fade{animation:fadein .8s ease both}
+  @keyframes fadein{from{opacity:0}to{opacity:1}}
+
+  @media (prefers-reduced-motion: reduce){
+    .drop{animation:none;opacity:.1}
+    .reveal,.fade{animation:none}
+  }
+</style>
+</head>
+<body>
+  <div class="window"></div>
+  <div class="rain" id="rain"></div>
+  <div class="fog"></div>
+
+  <div class="stage">
+
+    <!-- LOCK -->
+    <section id="lock" class="fade">
+      <div class="eyebrow">for rainy days</div>
+      <h1>a letter, whenever<br>you need one</h1>
+      <p class="sub">type your key to come in</p>
+      <div class="keyrow">
+        <input type="text" id="key" placeholder="your key" autocomplete="off" spellcheck="false" autocapitalize="off">
+        <button id="unlock">open</button>
+      </div>
+      <div class="err" id="err"></div>
+    </section>
+
+    <!-- ROOM -->
+    <section id="room">
+      <div class="eyebrow" id="greeting">hi</div>
+      <div class="sill">
+        <div class="card stack" id="card">
+          <div class="mark">·</div>
+          <p id="cardText"></p>
+          <div class="sign" id="cardSign"></div>
+        </div>
+      </div>
+      <div class="controls">
+        <button id="draw">draw another</button>
+        <span class="count" id="count"></span>
+      </div>
+    </section>
+
+  </div>
+
+<script>
+/* ============================================================
+   ⬇⬇⬇  THIS IS THE ONLY PART YOU NEED TO EDIT  ⬇⬇⬇
+   ============================================================ */
+const CONFIG = {
+
+  // Her key. Keep it simple — lowercase, no spaces is easiest.
+  code: "canim",
+
+  // The little greeting shown after she unlocks. Edit the words if you want.
+  greeting: "aşkım, canım, hayatım",
+
+  // How you sign each card (shows small at the bottom). Or "".
+  signature: "Berke",
+
+  // ----- THE CARDS -----
+  // Write each one between backticks `like this`, separated by commas.
+  // You can use line breaks inside a card by just pressing Enter.
+  // Replace ALL of these with your own.
+  cards: [
+
+`Placeholder — replace me. This is what a card looks like.
+You can write as many lines as you want in here.`,
+
+`Another placeholder. Short ones work too.`,
+
+`A third placeholder so you can see the "draw another" button
+pull a different one each time.`,
+
+  ],
+};
+/* ============================================================
+   ⬆⬆⬆  STOP EDITING HERE — the rest just makes it work  ⬆⬆⬆
+   ============================================================ */
+
+
+// ---- rain ----
+(function makeRain(){
+  const rain = document.getElementById('rain');
+  const n = 70;
+  for(let i=0;i<n;i++){
+    const d = document.createElement('div');
+    d.className='drop';
+    d.style.left = Math.random()*100 + 'vw';
+    const dur = 0.5 + Math.random()*0.9;
+    d.style.animationDuration = dur + 's';
+    d.style.animationDelay = (-Math.random()*dur) + 's';
+    d.style.height = (50 + Math.random()*60) + 'px';
+    d.style.opacity = (0.08 + Math.random()*0.18).toFixed(2);
+    rain.appendChild(d);
+  }
+})();
+
+// ---- unlock ----
+const keyInput = document.getElementById('key');
+const errEl = document.getElementById('err');
+
+function tryUnlock(){
+  const val = keyInput.value.trim().toLowerCase();
+  if(val === CONFIG.code.trim().toLowerCase()){
+    document.getElementById('lock').style.display='none';
+    const room = document.getElementById('room');
+    room.classList.add('on','fade');
+    document.getElementById('greeting').textContent = CONFIG.greeting || '';
+    drawCard();
+  } else {
+    errEl.textContent = "that's not it — try again";
+    errEl.classList.add('show');
+  }
+}
+document.getElementById('unlock').addEventListener('click', tryUnlock);
+keyInput.addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+keyInput.addEventListener('input', ()=> errEl.classList.remove('show'));
+
+// ---- draw a card (no immediate repeat) ----
+let last = -1;
+const cardEl = document.getElementById('card');
+const textEl = document.getElementById('cardText');
+const signEl = document.getElementById('cardSign');
+const countEl = document.getElementById('count');
+
+function drawCard(){
+  const cards = CONFIG.cards;
+  if(!cards || cards.length === 0){
+    textEl.innerHTML = '<span class="empty">no cards yet — add some in the file and they\u2019ll appear here.</span>';
+    signEl.textContent='';
+    countEl.textContent='';
+    document.getElementById('draw').style.display='none';
+    return;
+  }
+  let i = Math.floor(Math.random()*cards.length);
+  if(cards.length > 1){
+    while(i === last) i = Math.floor(Math.random()*cards.length);
+  }
+  last = i;
+
+  textEl.textContent = cards[i];
+  signEl.textContent = CONFIG.signature || '';
+
+  cardEl.classList.remove('reveal');
+  void cardEl.offsetWidth; // restart animation
+  cardEl.classList.add('reveal');
+
+  countEl.textContent = cards.length === 1 ? 'one note' : cards.length + ' notes in here';
+}
+document.getElementById('draw').addEventListener('click', drawCard);
+</script>
+</body>
+</html>
